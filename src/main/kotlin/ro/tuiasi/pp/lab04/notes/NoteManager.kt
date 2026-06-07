@@ -21,14 +21,11 @@ class NoteManager(private val repo: NoteRepository) {
      * @return Notița creată și salvată
      */
     fun createNote(author: String, content: String): Note {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Generați un ID unic: UUID.randomUUID().toString()
-        // 2. Obțineți data curentă: LocalDateTime.now()
-        // 3. Creați nota: Note(id, author, data, content)
-        // 4. Salvați: repo.save(nota)
-        // 5. Returnați nota
-        TODO("De implementat: generează ID unic, creează și salvează nota")
+        val id = UUID.randomUUID().toString()
+        val data = LocalDateTime.now()
+        val nota = Note(id, author, data, content)
+        repo.save(nota)
+        return nota
     }
 
     /**
@@ -39,10 +36,7 @@ class NoteManager(private val repo: NoteRepository) {
      * @throws NoSuchElementException dacă notița nu există
      */
     fun loadNote(id: String): Note {
-        // TODO("De implementat")
-        // Apelați repo.findById(id) și aruncați NoSuchElementException dacă returnează null
-        // Mesaj sugestiv: "Notița cu id=$id nu a fost găsită"
-        TODO("De implementat: caută nota în repository, aruncă excepție dacă nu există")
+        return repo.findById(id) ?: throw NoSuchElementException("Notița cu id=$id nu a fost găsită")
     }
 
     /**
@@ -51,9 +45,7 @@ class NoteManager(private val repo: NoteRepository) {
      * @return Lista notițelor sortate
      */
     fun listNotes(): List<Note> {
-        // TODO("De implementat")
-        // Apelați repo.findAll() și sortați descrescător după createdAt
-        TODO("De implementat: returnează toate notițele sortate descrescător după dată")
+        return repo.findAll().sortedByDescending { it.createdAt }
     }
 
     /**
@@ -62,8 +54,6 @@ class NoteManager(private val repo: NoteRepository) {
      * @param id ID-ul notiței de șters
      */
     fun deleteNote(id: String) {
-        // TODO("De implementat")
-        // Apelați repo.delete(id)
-        TODO("De implementat: șterge nota cu id-ul dat din repository")
+        repo.delete(id)
     }
 }

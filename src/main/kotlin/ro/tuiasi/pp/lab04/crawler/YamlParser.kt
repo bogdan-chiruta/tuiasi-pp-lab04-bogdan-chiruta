@@ -22,15 +22,20 @@ class YamlParser : ContentParser {
      * @return Mapa cu perechile cheie→valoare extrase
      */
     override fun parse(content: String): Map<String, Any> {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Împărțiți content în linii: content.lines()
-        // 2. Filtrați liniile goale și comentariile (care încep cu '#')
-        // 3. Pentru fiecare linie, împărțiți după primul ':' cu limit=2
-        //    ex: "cheie: valoare complexă".split(":", limit = 2)
-        // 4. Cheia = prima parte, trimmed și fără ghilimele
-        // 5. Valoarea = a doua parte, trimmed și fără ghilimele
-        // 6. Detectați tipul: Int dacă poate fi parsat ca număr, altfel String
-        TODO("De implementat: parsare YAML simplu (cheie: valoare) pe linii")
+        val result = mutableMapOf<String, Any>()
+
+        content.lines()
+            .filter { it.isNotBlank() && !it.trimStart().startsWith('#') }
+            .forEach { line ->
+                val parts = line.split(":", limit = 2)
+                if (parts.size < 2) return@forEach
+
+                val key = parts[0].trim().trim('"')
+                val value = parts[1].trim().trim('"')
+
+                result[key] = value.toIntOrNull() ?: value
+            }
+
+        return result
     }
 }

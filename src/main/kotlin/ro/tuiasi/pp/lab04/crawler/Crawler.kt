@@ -17,15 +17,13 @@ class Crawler(private val parser: ContentParser) {
      * @return Mapa cu datele parsate din răspunsul HTTP
      */
     fun fetch(url: String): Map<String, Any> {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Folosiți OkHttp pentru a descărca conținutul de la url:
-        //    val client = okhttp3.OkHttpClient()
-        //    val request = okhttp3.Request.Builder().url(url).build()
-        //    val continut = client.newCall(request).execute().body?.string() ?: ""
-        // 2. Apelați parser.parse(continut) pentru a obține mapa
-        // 3. Returnați mapa rezultată
-        // Tratați excepțiile de rețea și returnați mapă goală la eroare
-        TODO("De implementat: descarcă conținut cu OkHttp și parsează cu parser injectat")
+        return try {
+            val client = okhttp3.OkHttpClient()
+            val request = okhttp3.Request.Builder().url(url).build()
+            val continut = client.newCall(request).execute().body?.string() ?: ""
+            parser.parse(continut)
+        } catch (e: Exception) {
+            emptyMap()
+        }
     }
 }

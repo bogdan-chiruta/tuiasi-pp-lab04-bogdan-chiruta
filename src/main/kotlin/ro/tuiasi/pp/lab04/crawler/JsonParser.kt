@@ -23,14 +23,22 @@ class JsonParser : ContentParser {
      * @return Mapa cu perechile cheie→valoare extrase
      */
     override fun parse(content: String): Map<String, Any> {
-        // TODO("De implementat")
-        // Pași de urmat (fără bibliotecă JSON externă):
-        // 1. Eliminați spațiile de la început și sfârșit, și caracterele '{' și '}'
-        // 2. Împărțiți în perechi cheie:valoare după virgulă: content.split(",")
-        // 3. Pentru fiecare pereche, împărțiți după primul ':' și extrageți cheia și valoarea
-        // 4. Eliminați ghilimelele din jurul cheilor și valorilor string
-        // 5. Detectați tipul valorii: dacă poate fi parseată ca Int → Int, altfel String
-        // Alternativ: puteți adăuga Gson/Jackson în pom.xml dacă doriți o soluție mai robustă
-        TODO("De implementat: parsare JSON simplu (obiecte plate cheie:valoare)")
+        val result = mutableMapOf<String, Any>()
+
+        val trimmed = content.trim().trimStart('{').trimEnd('}')
+        if (trimmed.isBlank()) return result
+
+        val pairs = trimmed.split(",")
+        for (pair in pairs) {
+            val colonIndex = pair.indexOf(':')
+            if (colonIndex == -1) continue
+
+            val key = pair.substring(0, colonIndex).trim().trim('"')
+            val value = pair.substring(colonIndex + 1).trim().trim('"')
+
+            result[key] = value.toIntOrNull() ?: value
+        }
+
+        return result
     }
 }

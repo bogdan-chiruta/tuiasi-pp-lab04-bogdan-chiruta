@@ -21,15 +21,16 @@ class CinemaService(private val repo: CinemaRepository) {
      * @throws IllegalStateException dacă scaunul nu este disponibil
      */
     fun bookTicket(movie: Movie, seat: Seat, price: Double): Ticket {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Verificați că seat.isAvailable == true
-        //    Dacă nu: throw IllegalStateException("Scaunul ${seat.row}/${seat.number} nu este disponibil")
-        // 2. Marcați scaunul ca indisponibil: repo.updateSeat(seat.copy(isAvailable = false))
-        // 3. Creați biletul: val bilet = Ticket(movie, seat.copy(isAvailable = false), price)
-        // 4. Salvați biletul: repo.saveTicket(bilet)
-        // 5. Returnați biletul
-        TODO("De implementat: verifică disponibilitate, marchează scaunul și creează biletul")
+        if (!seat.isAvailable)
+            throw IllegalStateException("Scaunul ${seat.row}/${seat.number} nu este disponibil")
+
+        val occupiedSeat = seat.copy(isAvailable = false)
+        repo.updateSeat(occupiedSeat)
+
+        val ticket = Ticket(movie, occupiedSeat, price)
+        repo.saveTicket(ticket)
+
+        return ticket
     }
 
     /**
@@ -38,11 +39,8 @@ class CinemaService(private val repo: CinemaRepository) {
      * @param ticket Biletul de anulat
      */
     fun cancelTicket(ticket: Ticket) {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Ștergeți biletul: repo.deleteTicket(ticket)
-        // 2. Eliberați scaunul: repo.updateSeat(ticket.seat.copy(isAvailable = true))
-        TODO("De implementat: șterge biletul și marchează scaunul ca disponibil")
+        repo.deleteTicket(ticket)
+        repo.updateSeat(ticket.seat.copy(isAvailable = true))
     }
 
     /**
@@ -52,8 +50,6 @@ class CinemaService(private val repo: CinemaRepository) {
      * @return Lista scaunelor cu `isAvailable = true`
      */
     fun availableSeats(movie: Movie): List<Seat> {
-        // TODO("De implementat")
-        // Obțineți toate scaunele și filtrați doar pe cele disponibile
-        TODO("De implementat: returnează scaunele disponibile (isAvailable == true)")
+        return repo.allSeats(movie).filter { it.isAvailable }
     }
 }

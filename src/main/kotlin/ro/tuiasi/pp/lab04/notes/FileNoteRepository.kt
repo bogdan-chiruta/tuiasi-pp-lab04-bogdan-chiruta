@@ -27,17 +27,13 @@ class FileNoteRepository(private val dir: Path) : NoteRepository {
      * Dacă directorul nu există, îl creează automat.
      */
     override fun save(note: Note) {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Creați directorul dacă nu există: dir.toFile().mkdirs()
-        // 2. Determinați calea fișierului: dir.resolve("${note.id}.txt")
-        // 3. Scrieți conținutul în formatul specificat:
-        //    "AUTHOR: ${note.author}\n" +
-        //    "CREATED_AT: ${note.createdAt}\n" +
-        //    "CONTENT:\n" +
-        //    "${note.content}"
-        // 4. Folosiți Files.writeString(cale, continut) sau file.writeText(continut)
-        TODO("De implementat: salvează notița ca fișier text {id}.txt în directorul dir")
+        dir.toFile().mkdirs()
+        val cale = dir.resolve("${note.id}.txt")
+        val continut = "AUTHOR: ${note.author}\n" +
+                "CREATED_AT: ${note.createdAt}\n" +
+                "CONTENT:\n" +
+                note.content
+        cale.toFile().writeText(continut)
     }
 
     /**
@@ -46,39 +42,31 @@ class FileNoteRepository(private val dir: Path) : NoteRepository {
      * @return Notița deserializată, sau `null` dacă fișierul nu există
      */
     override fun findById(id: String): Note? {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Construiți calea: dir.resolve("$id.txt")
-        // 2. Dacă fișierul nu există, returnați null
-        // 3. Citiți conținutul fișierului
-        // 4. Parsați liniile:
-        //    - Linia 0: "AUTHOR: ..." → extrageți autorul
-        //    - Linia 1: "CREATED_AT: ..." → LocalDateTime.parse(...)
-        //    - Linia 2: "CONTENT:" → ignorați
-        //    - Restul liniilor: conținutul notiței (joined cu "\n")
-        // 5. Returnați Note(id, autor, data, continut)
-        TODO("De implementat: citește și parsează fișierul {id}.txt, returnează Note sau null")
+        val cale = dir.resolve("$id.txt")
+        if (!cale.toFile().exists()) return null
+
+        val linii = cale.toFile().readLines()
+        val autor = linii[0].removePrefix("AUTHOR: ")
+        val data = LocalDateTime.parse(linii[1].removePrefix("CREATED_AT: "))
+        val continut = linii.drop(3).joinToString("\n")
+
+        return Note(id, autor, data, continut)
     }
 
     /**
      * Returnează toate notițele din [dir], citind toate fișierele `*.txt`.
      */
     override fun findAll(): List<Note> {
-        // TODO("De implementat")
-        // Pași de urmat:
-        // 1. Listați fișierele din dir cu extensia .txt: dir.toFile().listFiles { f -> f.extension == "txt" }
-        // 2. Pentru fiecare fișier, extrageți id-ul din numele fișierului (fără extensie)
-        // 3. Apelați findById(id) și colectați rezultatele non-null
-        TODO("De implementat: listează toate fișierele .txt și le parsează ca notițe")
+        return dir.toFile()
+            .listFiles { f -> f.extension == "txt" }
+            ?.mapNotNull { f -> findById(f.nameWithoutExtension) }
+            ?: emptyList()
     }
 
     /**
      * Șterge fișierul `{id}.txt` din [dir].
      */
     override fun delete(id: String) {
-        // TODO("De implementat")
-        // 1. Construiți calea: dir.resolve("$id.txt")
-        // 2. Ștergeți fișierul: cale.toFile().delete()
-        TODO("De implementat: șterge fișierul {id}.txt din directorul dir")
+        dir.resolve("$id.txt").toFile().delete()
     }
 }
